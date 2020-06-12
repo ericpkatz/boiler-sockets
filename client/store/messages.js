@@ -12,7 +12,7 @@ const CREATE_MESSAGE = 'CREATE_MESSAGE'
  * ACTION CREATORS
  */
 const setMessages = messages => ({type: SET_MESSAGES, messages})
-const _createMessage = message => ({type: CREATE_MESSAGE, message})
+export const _createMessage = message => ({type: CREATE_MESSAGE, message})
 
 /**
  * THUNK CREATORS
@@ -35,6 +35,9 @@ export default function(state = [], action) {
     case SET_MESSAGES:
       return action.messages
     case CREATE_MESSAGE:
+      if(state.find(message => message.id === action.message.id)){
+        return state;
+      }
       return [action.message, ...state]
     default:
       return state

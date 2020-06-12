@@ -3,7 +3,8 @@ import {connect} from 'react-redux'
 import {withRouter, Route, Switch} from 'react-router-dom'
 import PropTypes from 'prop-types'
 import {Login, Signup, UserHome, Messages} from './components'
-import {me, getMessages} from './store'
+import {me, getMessages, _createMessage} from './store'
+import socket from './socket';
 
 /**
  * COMPONENT
@@ -11,6 +12,9 @@ import {me, getMessages} from './store'
 class Routes extends Component {
   componentDidMount() {
     this.props.loadInitialData()
+    socket.on('message', (message)=> {
+      this.props.createMessage(message);
+    });
   }
 
   render() {
@@ -48,6 +52,9 @@ const mapState = state => {
 
 const mapDispatch = dispatch => {
   return {
+    createMessage: (message)=> {
+      dispatch(_createMessage(message))
+    },
     loadInitialData() {
       dispatch(me())
       dispatch(getMessages())
