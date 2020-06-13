@@ -4,15 +4,19 @@ import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {logout} from '../store'
 
-const Navbar = ({handleClick, isLoggedIn, messages}) => (
+const Navbar = ({handleClick, isLoggedIn, messages, dms, user}) => (
   <div>
-    <h1>BOILERMAKER</h1>
+    <h1>Socket Chat</h1>
+    {
+      user.email
+    }
     <nav>
-      <Link to="/messages">Messages ({ messages.length })</Link>
       {isLoggedIn ? (
         <div>
           {/* The navbar will show these links after you log in */}
           <Link to="/home">Home</Link>
+          <Link to="/dms">dms ({ dms.length })</Link>
+          <Link to="/messages">Public ({ messages.length })</Link>
           <a href="#" onClick={handleClick}>
             Logout
           </a>
@@ -22,6 +26,7 @@ const Navbar = ({handleClick, isLoggedIn, messages}) => (
           {/* The navbar will show these links before you log in */}
           <Link to="/login">Login</Link>
           <Link to="/signup">Sign Up</Link>
+          <Link to="/messages">Public ({ messages.length })</Link>
         </div>
       )}
     </nav>
@@ -34,8 +39,10 @@ const Navbar = ({handleClick, isLoggedIn, messages}) => (
  */
 const mapState = state => {
   return {
+    user: state.user,
+    dms: state.messages.filter(message => message.dmId),
     isLoggedIn: !!state.user.id,
-    messages: state.messages
+    messages: state.messages.filter(message => !message.dmId)
   }
 }
 

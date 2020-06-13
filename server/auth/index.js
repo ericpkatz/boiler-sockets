@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const User = require('../db/models/user')
 module.exports = router
+const socket = require('../socket');
 
 router.post('/login', async (req, res, next) => {
   try {
@@ -33,8 +34,10 @@ router.post('/signup', async (req, res, next) => {
 })
 
 router.post('/logout', (req, res) => {
+  delete socket.userSockets()[req.user.id];
   req.logout()
   req.session.destroy()
+
   res.redirect('/')
 })
 
