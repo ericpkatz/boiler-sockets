@@ -17,6 +17,12 @@ const Message = db.define('message', {
   userId: {
     type: UUID,
     allowNull: false
+  },
+  dmId: {
+    type: UUID,
+    set: function(value){
+      this.setDataValue('dmId', value || null);
+    }
   }
 }, {
   hooks: {
@@ -26,9 +32,13 @@ const Message = db.define('message', {
         include: [ db.models.user ]
       })
       .then( message => {
-        console.log(message)
         if(socket.getIO()){
-          socket.getIO().emit('message', message);
+          if(!message.dmId){
+            socket.getIO().emit('message', message);
+          }
+          else {
+            //socket.sendTo(message.dmId, message);
+          }
         }
       });
     }

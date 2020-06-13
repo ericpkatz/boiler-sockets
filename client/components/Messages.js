@@ -7,26 +7,55 @@ import { createMessage } from '../store';
  * COMPONENT
  */
 export const Messages = props => {
-  const { messages } = props
+  const { messages, users, user, isDms} = props
   const [ text, setText ] = useState('');
+  const [ dm , setDm ] = useState('');
 
   return (
     <div>
-      <form
-        onSubmit={ (ev)=> {
-          ev.preventDefault();
-          props.createMessage(text);
-          setText('') 
-        }
-      }>
-        <input value={ text } onChange={ ev => setText(ev.target.value)} />
-      </form>
+      <h1>{ isDms ? 'DMS' : 'Public' }</h1>
+      {
+        props.user.id && (
+          <form
+            onSubmit={ (ev)=> {
+              ev.preventDefault();
+              props.createMessage({ text, dmId: dm});
+              setText('') 
+            }
+          }>
+            <input value={ text } onChange={ ev => setText(ev.target.value)} />
+            <select value={ dm } onChange={ ev => setDm(ev.target.value)}>
+              
+              <option value=''>Everyone</option>
+              {
+                users.map( user => {
+                  return (
+                    <option key={user.id} value={ user.id }>{ user.email }</option>
+                  );
+                })
+              }
+            </select>
+            <button disabled={ isDms && !dm}>Send</button>
+          </form>
+
+        )
+      }
       <ul>
         {
           messages.map( message => {
             return (
-              <li key={ message.id }>
-                { message.text } from { message.user.email }
+              <li key={ message.id } className={ message.user.id === user.id ? 'bold': ''}>
+                <div>
+                From: { user.id === message.user.id ? 'You': message.user.email }
+                </div>
+                {
+                  message.dm && <div>To: { message.dm.id === user.id ? 'You': message.dm.email }</div>
+                }
+                <div>
+                  {
+                    message.text
+                  }
+                </div>
               </li>
             );
           })
@@ -39,15 +68,20 @@ export const Messages = props => {
 /**
  * CONTAINER
  */
-const mapState = state => {
+const mapState = (state, { location }) => {
+  const isDms = location.pathname === '/dms';
+
   return {
-    messages: state.messages
+    isDms,
+    messages: state.messages.filter( message => isDms ? message.dmId : !message.dmId),
+    users : state.users,
+    user : state.user
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    createMessage: (text)=> dispatch(createMessage({text}))  
+    createMessage: (message)=> dispatch(createMessage(message))  
   }
 }
 

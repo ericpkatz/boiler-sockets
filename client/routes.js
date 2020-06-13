@@ -3,7 +3,7 @@ import {connect} from 'react-redux'
 import {withRouter, Route, Switch} from 'react-router-dom'
 import PropTypes from 'prop-types'
 import {Login, Signup, UserHome, Messages} from './components'
-import {me, getMessages, _createMessage} from './store'
+import {me, getMessages, _createMessage, getUsers} from './store'
 import socket from './socket';
 
 /**
@@ -16,10 +16,8 @@ class Routes extends Component {
       this.props.createMessage(message);
     });
   }
-
   render() {
     const {isLoggedIn} = this.props
-
     return (
       <Switch>
         {/* Routes placed here are available to all visitors */}
@@ -28,6 +26,7 @@ class Routes extends Component {
         <Route path="/signup" component={Signup} />
         {isLoggedIn && (
           <Switch>
+            <Route path="/dms" component={Messages} />
             {/* Routes placed here are only available after logging in */}
             <Route path="/home" component={UserHome} />
           </Switch>
@@ -56,6 +55,7 @@ const mapDispatch = dispatch => {
       dispatch(_createMessage(message))
     },
     loadInitialData() {
+      dispatch(getUsers())
       dispatch(me())
       dispatch(getMessages())
     }

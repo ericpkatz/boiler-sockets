@@ -16,6 +16,7 @@ const Message = require('./message');
  */
 
 Message.belongsTo(User);
+Message.belongsTo(User, { as: 'dm'});
 User.hasMany(Message);
 
 module.exports = {
