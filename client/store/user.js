@@ -1,5 +1,6 @@
 import axios from 'axios'
 import history from '../history'
+import io from 'socket.io-client'
 
 /**
  * ACTION TYPES
@@ -40,6 +41,7 @@ export const auth = (email, password, method) => async dispatch => {
 
   try {
     dispatch(getUser(res.data))
+    io();
     history.push('/home')
   } catch (dispatchOrHistoryErr) {
     console.error(dispatchOrHistoryErr)

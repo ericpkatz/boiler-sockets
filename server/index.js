@@ -102,7 +102,14 @@ const startListening = () => {
 
   // set up our socket control center
   const io = socketio(server)
-  require('./socket').setup(io);
+  require('./socket').setup(io, 
+    session({
+      secret: process.env.SESSION_SECRET || 'my best friend is Cody',
+      store: sessionStore,
+      resave: false,
+      saveUninitialized: false
+    })
+  );
 }
 
 const syncDb = () => db.sync()

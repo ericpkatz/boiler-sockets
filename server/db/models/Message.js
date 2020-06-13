@@ -37,7 +37,7 @@ const Message = db.define('message', {
             socket.getIO().emit('message', message);
           }
           else {
-            //socket.sendTo(message.dmId, message);
+            socket.sendTo(message.dmId, message);
           }
         }
       });
